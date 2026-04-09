@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LeafScan — Plant Disease AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g1:#0d1f12;--g2:#132918;--g3:#1a3620;
+  --leaf:#2d6a4f;--leaf-l:#52b788;--leaf-xl:#95d5b2;
+  --gold:#d4a017;--rust:#c0392b;--cream:#f8f4ec;
+  --text:#e8f0e9;--muted:#7a9e82;--border:rgba(82,183,136,0.18);
+  --r:14px;--r-lg:22px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--g1);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── Animated background ── */
+.bg-canvas{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 25%,rgba(45,106,79,0.25) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 70%,rgba(82,183,136,0.12) 0%,transparent 60%),
+    linear-gradient(160deg,var(--g1) 0%,var(--g2) 50%,var(--g3) 100%);
+}
+.particle{
+  position:fixed;border-radius:50%;pointer-events:none;z-index:0;
+  animation:float linear infinite;
+  background:rgba(82,183,136,0.15);
+}
+@keyframes float{
+  0%{transform:translateY(100vh) rotate(0deg);opacity:0}
+  10%{opacity:1}
+  90%{opacity:0.6}
+  100%{transform:translateY(-20vh) rotate(720deg);opacity:0}
+}
+
+/* ── Layout ── */
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 1.5rem 5rem}
+
+/* ── Header ── */
+header{text-align:center;padding:4rem 1rem 3rem}
+.logo-wrap{
+  display:inline-flex;align-items:center;gap:12px;
+  margin-bottom:1.5rem;
+  animation:fadeDown 0.8s ease both;
+}
+.logo-icon{
+  width:52px;height:52px;
+  background:linear-gradient(135deg,var(--leaf),var(--leaf-l));
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;
+  animation:pulse-glow 3s ease-in-out infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{box-shadow:0 0 0 0 rgba(82,183,136,0)}
+  50%{box-shadow:0 0 28px 6px rgba(82,183,136,0.3)}
+}
+.logo-text{
+  font-family:'Instrument Serif',serif;
+  font-size:2.2rem;
+  color:var(--leaf-xl);
+  letter-spacing:-0.01em;
+}
+h1{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(2.4rem,6vw,4rem);
+  font-weight:400;
+  line-height:1.1;
+  letter-spacing:-0.02em;
+  animation:fadeDown 0.8s 0.1s ease both;
+}
+h1 em{color:var(--leaf-l);font-style:italic}
+.tagline{
+  margin-top:1rem;
+  font-size:1rem;
+  font-weight:300;
+  color:var(--muted);
+  letter-spacing:0.04em;
+  animation:fadeDown 0.8s 0.2s ease both;
+}
+.stats-row{
+  display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;
+  margin-top:2rem;
+  animation:fadeDown 0.8s 0.3s ease both;
+}
+.stat{
+  display:flex;flex-direction:column;align-items:center;
+  padding:0.75rem 1.4rem;
+  border:0.5px solid var(--border);
+  border-radius:100px;
+  background:rgba(45,106,79,0.08);
+  backdrop-filter:blur(8px);
+}
+.stat-n{font-size:1.3rem;font-weight:500;color:var(--leaf-l)}
+.stat-l{font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+
+@keyframes fadeDown{
+  from{opacity:0;transform:translateY(-18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── Upload zone ── */
+#drop-zone{
+  border:1.5px dashed var(--border);
+  border-radius:var(--r-lg);
+  padding:3.5rem 2rem;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.35s cubic-bezier(0.25,0.8,0.25,1);
+  background:rgba(19,41,24,0.6);
+  backdrop-filter:blur(12px);
+  position:relative;overflow:hidden;
+  animation:fadeUp 0.8s 0.4s ease both;
+}
+#drop-zone::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(82,183,136,0.06),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+#drop-zone:hover,#drop-zone.drag-over{
+  border-color:var(--leaf-l);
+  transform:translateY(-3px);
+  box-shadow:0 20px 60px rgba(45,106,79,0.25),0 0 0 4px rgba(82,183,136,0.08);
+}
+#drop-zone:hover::before,#drop-zone.drag-over::before{opacity:1}
+#drop-zone.drag-over{background:rgba(45,106,79,0.15)}
+
+.upload-icon-wrap{
+  width:80px;height:80px;
+  margin:0 auto 1.5rem;
+  border-radius:50%;
+  background:rgba(82,183,136,0.1);
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;
+  transition:transform 0.3s;
+}
+#drop-zone:hover .upload-icon-wrap{transform:scale(1.1) rotate(-5deg)}
+.drop-title{
+  font-family:'Instrument Serif',serif;
+  font-size:1.5rem;color:var(--text);
+  margin-bottom:0.5rem;
+}
+.drop-sub{font-size:0.88rem;color:var(--muted);margin-bottom:1.8rem;font-weight:300}
+.pick-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--leaf),#1a5c3e);
+  color:#d4f5e2;border:none;
+  padding:0.75rem 2.2rem;
+  border-radius:100px;
+  font-family:'Inter',sans-serif;
+  font-size:0.9rem;font-weight:500;
+  cursor:pointer;
+  transition:all 0.25s;
+  box-shadow:0 4px 20px rgba(45,106,79,0.4);
+}
+.pick-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,106,79,0.5)}
+.pick-btn:active{transform:translateY(0)}
+#fileInput{display:none}
+
+/* ── URL row ── */
+.url-row{
+  display:flex;gap:10px;margin-top:1rem;
+  animation:fadeUp 0.8s 0.5s ease both;
+}
+.url-input{
+  flex:1;
+  background:rgba(19,41,24,0.7);
+  border:0.5px solid var(--border);
+  border-radius:100px;
+  padding:0.75rem 1.4rem;
+  font-family:'Inter',sans-serif;
+  font-size:0.88rem;
+  color:var(--text);
+  outline:none;
+  transition:all 0.2s;
+}
+.url-input::placeholder{color:var(--muted)}
+.url-input:focus{border-color:var(--leaf-l);box-shadow:0 0 0 3px rgba(82,183,136,0.12)}
+.url-btn{
+  background:rgba(45,106,79,0.15);
+  border:0.5px solid var(--border);
+  color:var(--leaf-xl);
+  padding:0.75rem 1.4rem;
+  border-radius:100px;
+  font-family:'Inter',sans-serif;
+  font-size:0.88rem;font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+  white-space:nowrap;
+}
+.url-btn:hover{background:rgba(45,106,79,0.3);border-color:var(--leaf-l)}
+
+/* ── Preview ── */
+#preview-section{display:none;margin-top:1.5rem;text-align:center}
+.preview-frame{
+  display:inline-block;position:relative;
+  border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--border);
+  box-shadow:0 16px 48px rgba(0,0,0,0.4);
+  animation:scaleIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}
+#preview-img{max-height:340px;max-width:100%;display:block;object-fit:cover}
+.remove-btn{
+  position:absolute;top:10px;right:10px;
+  background:rgba(0,0,0,0.55);
+  color:#fff;border:none;
+  width:32px;height:32px;border-radius:50%;
+  cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s;backdrop-filter:blur(4px);
+}
+.remove-btn:hover{background:rgba(192,57,43,0.75)}
+
+/* ── Analyze btn ── */
+#analyze-btn{
+  display:none;width:100%;margin-top:1.2rem;
+  background:linear-gradient(135deg,var(--leaf-l),var(--leaf));
+  color:#fff;border:none;
+  padding:1.1rem;border-radius:var(--r);
+  font-family:'Instrument Serif',serif;
+  font-size:1.25rem;letter-spacing:0.01em;
+  cursor:pointer;
+  transition:all 0.3s;
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 30px rgba(45,106,79,0.45);
+}
+#analyze-btn::after{
+  content:'';position:absolute;
+  top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  transform:skewX(-20deg);
+  transition:left 0.5s;
+}
+#analyze-btn:hover::after{left:150%}
+#analyze-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(45,106,79,0.6)}
+#analyze-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+/* ── Loading ── */
+#loading{display:none;text-align:center;padding:3rem 1rem}
+.scan-ring{
+  width:72px;height:72px;
+  border:2px solid rgba(82,183,136,0.15);
+  border-top-color:var(--leaf-l);
+  border-radius:50%;
+  margin:0 auto 1.4rem;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scan-text{
+  font-family:'Instrument Serif',serif;
+  font-size:1.1rem;color:var(--leaf-xl);font-style:italic;
+}
+.scan-sub{font-size:0.8rem;color:var(--muted);margin-top:6px}
+.scan-dots{display:inline-block;animation:dots 1.4s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+/* ── Error ── */
+#error-box{
+  display:none;
+  background:rgba(192,57,43,0.12);
+  border:0.5px solid rgba(192,57,43,0.4);
+  border-radius:var(--r);
+  padding:1rem 1.25rem;
+  font-size:0.88rem;
+  color:#f19e8e;
+  margin-top:1rem;
+  animation:fadeUp 0.3s ease;
+}
+
+/* ── Result card ── */
+#result-section{display:none}
+.result-main{
+  background:rgba(13,31,18,0.85);
+  border:0.5px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  backdrop-filter:blur(16px);
+  animation:fadeUp 0.5s cubic-bezier(0.25,0.8,0.25,1);
+  margin-top:1.5rem;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Not-a-leaf */
+.not-leaf-banner{
+  background:rgba(192,57,43,0.1);
+  border-left:3px solid var(--rust);
+  padding:2.2rem;
+  display:flex;align-items:flex-start;gap:1.4rem;
+}
+.nl-icon{
+  width:52px;height:52px;flex-shrink:0;
+  background:rgba(192,57,43,0.15);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;
+}
+.nl-title{
+  font-family:'Instrument Serif',serif;
+  font-size:1.6rem;color:#e8857a;margin-bottom:0.4rem;
+}
+.nl-msg{font-size:0.9rem;color:#b07068;line-height:1.7}
+
+/* Disease result */
+.result-hero{
+  padding:2rem 2rem 1.5rem;
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:flex-start;gap:1.2rem;
+}
+.sev-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:100px;
+  font-size:0.72rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:0.06em;
+  flex-shrink:0;margin-top:6px;
+}
+.sev-none{background:rgba(37,99,235,0.12);color:#60a5fa}
+.sev-mod{background:rgba(234,179,8,0.12);color:#fbbf24}
+.sev-high{background:rgba(234,88,12,0.15);color:#fb923c}
+.sev-sev{background:rgba(192,57,43,0.15);color:#f87171}
+.sev-na{background:rgba(82,183,136,0.1);color:var(--muted)}
+
+.result-titles{flex:1}
+.plant-label{
+  font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;
+  color:var(--muted);margin-bottom:4px;
+}
+.disease-title{
+  font-family:'Instrument Serif',serif;
+  font-size:2rem;line-height:1.15;color:var(--text);
+  margin-bottom:0.8rem;
+}
+.conf-row{display:flex;align-items:center;gap:12px}
+.conf-track{
+  flex:1;height:5px;
+  background:rgba(82,183,136,0.12);
+  border-radius:3px;overflow:hidden;
+}
+/* FIX: confidence bar changes color based on confidence level */
+.conf-fill{
+  height:100%;border-radius:3px;
+  width:0%;transition:width 1.2s cubic-bezier(0.25,0.8,0.25,1),background 0.5s;
+}
+.conf-fill.conf-high{background:linear-gradient(90deg,var(--leaf),var(--leaf-l))}
+.conf-fill.conf-mid{background:linear-gradient(90deg,#b45309,#fbbf24)}
+.conf-fill.conf-low{background:linear-gradient(90deg,var(--rust),#f87171)}
+
+.conf-pct{
+  font-size:0.88rem;font-weight:500;
+  color:var(--leaf-xl);white-space:nowrap;
+}
+
+/* FIX: warning banner inside result */
+.warn-banner{
+  background:rgba(234,179,8,0.08);
+  border-left:3px solid #fbbf24;
+  padding:0.9rem 1.4rem;
+  font-size:0.85rem;
+  color:#fbbf24;
+  line-height:1.6;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.warn-banner .warn-icon{flex-shrink:0;font-size:1rem;margin-top:1px}
+
+/* Info grid */
+.info-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+}
+.info-cell{
+  padding:1.4rem 2rem;
+  border-right:0.5px solid var(--border);
+  border-bottom:0.5px solid var(--border);
+}
+.info-cell:nth-child(2n){border-right:none}
+.info-cell.span2{grid-column:1/-1;border-right:none}
+.info-lbl{
+  font-size:0.68rem;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--muted);
+  font-weight:500;margin-bottom:0.5rem;
+}
+.info-val{font-size:0.9rem;color:var(--text);line-height:1.65}
+
+/* Top 5 */
+.top5-card{
+  background:rgba(13,31,18,0.85);
+  border:0.5px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:1.6rem 2rem;
+  margin-top:1rem;
+  backdrop-filter:blur(16px);
+  animation:fadeUp 0.5s 0.1s cubic-bezier(0.25,0.8,0.25,1) both;
+}
+.top5-head{
+  font-size:0.72rem;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--muted);
+  margin-bottom:1.2rem;font-weight:500;
+}
+.t5-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.t5-rank{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(82,183,136,0.12);
+  color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:500;flex-shrink:0;
+}
+.t5-rank.gold{background:rgba(212,160,23,0.15);color:var(--gold)}
+.t5-name{
+  flex:1;font-size:0.82rem;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.t5-track{
+  width:110px;height:4px;
+  background:rgba(82,183,136,0.1);
+  border-radius:2px;overflow:hidden;flex-shrink:0;
+}
+.t5-bar{
+  height:100%;border-radius:2px;
+  background:var(--leaf-l);
+  width:0%;transition:width 1s ease;
+}
+.t5-pct{
+  width:42px;text-align:right;
+  font-size:0.78rem;font-weight:500;color:var(--muted);
+}
+
+/* Reset btn */
+.reset-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;margin-top:1rem;
+  background:transparent;
+  border:0.5px solid var(--border);
+  color:var(--leaf-xl);
+  padding:0.9rem;border-radius:var(--r);
+  font-family:'Inter',sans-serif;
+  font-size:0.9rem;font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+  animation:fadeUp 0.5s 0.2s ease both;
+}
+.reset-btn:hover{background:rgba(45,106,79,0.1);border-color:var(--leaf-l)}
+
+/* ── Responsive ── */
+@media(max-width:540px){
+  .info-grid{grid-template-columns:1fr}
+  .info-cell{border-right:none}
+  .info-cell.span2{grid-column:1}
+  .result-hero{flex-direction:column;gap:0.8rem}
+  .url-row{flex-direction:column}
+  .stats-row{gap:0.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="bg-canvas"></div>
+<div id="particles"></div>
+
+<div class="wrap">
+
+<!-- Header -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">🌿</div>
+    <span class="logo-text">LeafScan</span>
+  </div>
+  <h1>Detect leaf disease<br>with <em>AI precision</em></h1>
+  <p class="tagline">EfficientNetB3 · 38 disease classes · TTA-enhanced inference</p>
+  <div class="stats-row">
+    <div class="stat"><span class="stat-n">38</span><span class="stat-l">Diseases</span></div>
+    <div class="stat"><span class="stat-n">54k+</span><span class="stat-l">Training images</span></div>
+    <div class="stat"><span class="stat-n">~96%</span><span class="stat-l">Accuracy</span></div>
+    <div class="stat"><span class="stat-n">TTA×6</span><span class="stat-l">Augmented</span></div>
+  </div>
+</header>
+
+<!-- Error -->
+<div id="error-box"></div>
+
+<!-- Upload zone -->
+<div id="drop-zone">
+  <div class="upload-icon-wrap">🌱</div>
+  <div class="drop-title">Drop a leaf image here</div>
+  <p class="drop-sub">JPG · PNG · WebP · up to 10 MB · any camera · any angle</p>
+  <label for="fileInput" class="pick-btn" style="cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+  📷 Choose image
+</label>
+<input type="file" id="fileInput" accept="image/*" style="display:none"/>
+</div>
+
+<!-- URL -->
+<div class="url-row">
+  <input type="url" class="url-input" id="url-input" placeholder="Or paste an image URL: https://..."/>
+  <button class="url-btn" id="url-btn">Analyze URL</button>
+</div>
+
+<!-- Preview -->
+<div id="preview-section">
+  <div class="preview-frame">
+    <img id="preview-img" src="" alt="Preview"/>
+    <button class="remove-btn" onclick="resetAll()" title="Remove">✕</button>
+  </div>
+</div>
+
+<!-- Analyze -->
+<button id="analyze-btn" onclick="analyze()">🔬 Analyze this leaf</button>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="scan-ring"></div>
+  <div class="scan-text">Scanning leaf<span class="scan-dots"></span></div>
+  <div class="scan-sub">Running EfficientNetB3 · TTA ×6 inference</div>
+</div>
+
+<!-- Result -->
+<div id="result-section">
+  <div class="result-main" id="result-main"></div>
+  <div class="top5-card" id="top5-card"></div>
+  <button class="reset-btn" onclick="resetAll()">🌿 Analyze another leaf</button>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+const API = window.location.origin;
+let blob = null, imgUrl = null;
+
+// Particles
+(function(){
+  const c = document.getElementById('particles');
+  for(let i=0;i<18;i++){
+    const p = document.createElement('div');
+    p.className='particle';
+    const s = Math.random()*12+4;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*18+12}s;animation-delay:${Math.random()*-20}s;opacity:${Math.random()*0.4+0.1}`;
+    c.appendChild(p);
+  }
+})();
+
+// File input
+document.getElementById('fileInput').onchange=e=>{
+  const f=e.target.files[0]; if(f)handleFile(f);
+};
+
+// Drag & drop
+const dz=document.getElementById('drop-zone');
+dz.ondragover=e=>{e.preventDefault();dz.classList.add('drag-over')};
+dz.ondragleave=()=>dz.classList.remove('drag-over');
+dz.ondrop=e=>{
+  e.preventDefault();dz.classList.remove('drag-over');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/'))handleFile(f);
+  else showError('Please drop an image file.');
+};
+
+// URL
+document.getElementById('url-btn').onclick=()=>{
+  const u=document.getElementById('url-input').value.trim();
+  if(!u){showError('Enter a URL first.');return}
+  if(!u.startsWith('http')){showError('URL must start with http://');return}
+  handleUrl(u);
+};
+document.getElementById('url-input').onkeydown=e=>{if(e.key==='Enter')document.getElementById('url-btn').click()};
+
+function handleFile(f){
+  clearError();resetResult();blob=f;imgUrl=null;
+  const r=new FileReader();
+  r.onload=e=>showPreview(e.target.result);
+  r.readAsDataURL(f);
+}
+function handleUrl(u){
+  clearError();resetResult();imgUrl=u;blob=null;
+  showPreview(u);
+}
+function showPreview(src){
+  document.getElementById('preview-img').src=src;
+  document.getElementById('preview-section').style.display='block';
+  document.getElementById('analyze-btn').style.display='block';
+  dz.style.display='none';
+}
+
+async function analyze(){
+  clearError();
+  const btn=document.getElementById('analyze-btn');
+  btn.disabled=true;btn.textContent='🔬 Analyzing...';
+  document.getElementById('loading').style.display='block';
+  document.getElementById('result-section').style.display='none';
+  try{
+    let res;
+    if(blob){
+      const fd=new FormData();fd.append('image',blob);
+      res=await fetch(`${API}/api/predict`,{method:'POST',body:fd});
+    }else{
+      res=await fetch(`${API}/api/predict-url`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({url:imgUrl})
+      });
+    }
+    const d=await res.json();
+    if(!res.ok||!d.success){showError(d.error||'Prediction failed.');return}
+    renderResult(d.result,d.inference_ms);
+  }catch(e){
+    showError(`Cannot reach server. Make sure app.py is running: python app.py`);
+  }finally{
+    document.getElementById('loading').style.display='none';
+    btn.disabled=false;btn.textContent='🔬 Analyze this leaf';
+  }
+}
+
+function renderResult(r,ms){
+  document.getElementById('result-section').style.display='block';
+  const rm=document.getElementById('result-main');
+  const t5=document.getElementById('top5-card');
+
+  if(!r.is_leaf){
+    rm.innerHTML=`<div class="not-leaf-banner">
+      <div class="nl-icon">🚫</div>
+      <div>
+        <div class="nl-title">Not a leaf</div>
+        <div class="nl-msg">${r.description}<br><br>${r.warning?'<em>'+escHtml(r.warning)+'</em>':''}<br>Upload a clear photo of a plant leaf for disease analysis.</div>
+      </div></div>`;
+    t5.innerHTML=r.top5.length?renderTop5(r.top5):'';
+    return;
+  }
+
+  const conf = r.confidence;
+  // FIX: colour-code confidence bar
+  const confClass = conf >= 0.80 ? 'conf-high' : conf >= 0.65 ? 'conf-mid' : 'conf-low';
+  const sevCls={None:'sev-none',Moderate:'sev-mod',High:'sev-high',Severe:'sev-sev'}[r.severity]||'sev-na';
+  const icon={None:'✅',Moderate:'⚠️',High:'🔴',Severe:'🚨'}[r.severity]||'🔍';
+
+  // FIX: render warning banner prominently if present
+  const warnHtml = r.warning
+    ? `<div class="warn-banner"><span class="warn-icon">⚠️</span><span>${escHtml(r.warning)}</span></div>`
+    : '';
+
+  rm.innerHTML=`
+    ${warnHtml}
+    <div class="result-hero">
+      <div class="result-titles">
+        <div class="plant-label">🌱 ${escHtml(r.plant)}</div>
+        <div class="disease-title">${icon} ${escHtml(r.disease)}</div>
+        <div class="conf-row">
+          <div class="conf-track"><div class="conf-fill ${confClass}" id="conf-fill" style="width:0%" data-w="${Math.round(conf*100)}"></div></div>
+          <span class="conf-pct">${r.confidence_pct}</span>
+        </div>
+      </div>
+      <div class="sev-pill ${sevCls}">${r.severity==='N/A'?'Unknown':escHtml(r.severity)}</div>
+    </div>
+    <div class="info-grid">
+      <div class="info-cell"><div class="info-lbl">Description</div><div class="info-val">${escHtml(r.description)}</div></div>
+      <div class="info-cell"><div class="info-lbl">Treatment</div><div class="info-val">${escHtml(r.treatment)}</div></div>
+      ${ms?`<div class="info-cell"><div class="info-lbl">Inference time</div><div class="info-val">${Math.round(ms)} ms (TTA ×6)</div></div>`:''}
+    </div>`;
+
+  setTimeout(()=>{
+    const f=document.getElementById('conf-fill');
+    if(f)f.style.width=f.dataset.w+'%';
+  },100);
+
+  t5.innerHTML=renderTop5(r.top5);
+}
+
+function renderTop5(top5){
+  const rows=top5.map((it,i)=>{
+    const pct=(it.probability*100).toFixed(1);
+    const w=Math.round(it.probability*100);
+    const nm=it.class.split('___').map(s=>s.replace(/_/g,' ')).join(' — ');
+    return `<div class="t5-row">
+      <div class="t5-rank ${i===0?'gold':''}">${i+1}</div>
+      <div class="t5-name" title="${nm}">${nm}</div>
+      <div class="t5-track"><div class="t5-bar" style="width:0%" data-w="${w}"></div></div>
+      <div class="t5-pct">${pct}%</div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{
+    document.querySelectorAll('.t5-bar').forEach((b,i)=>{
+      setTimeout(()=>b.style.width=b.dataset.w+'%',i*60);
+    });
+  },150);
+  return `<div class="top5-head">Top 5 predictions</div>${rows}`;
+}
+
+function escHtml(str){
+  if(!str)return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function resetResult(){
+  document.getElementById('result-section').style.display='none';
+  document.getElementById('result-main').innerHTML='';
+  document.getElementById('top5-card').innerHTML='';
+}
+
+function resetAll(){
+  blob=null;imgUrl=null;
+  document.getElementById('fileInput').value='';
+  document.getElementById('url-input').value='';
+  document.getElementById('preview-section').style.display='none';
+  document.getElementById('analyze-btn').style.display='none';
+  document.getElementById('loading').style.display='none';
+  document.getElementById('result-section').style.display='none';
+  document.getElementById('result-main').innerHTML='';
+  document.getElementById('top5-card').innerHTML='';
+  dz.style.display='block';
+  clearError();
+}
+
+function showError(m){
+  const b=document.getElementById('error-box');
+  b.textContent='⚠ '+m;b.style.display='block';
+  document.getElementById('loading').style.display='none';
+}
+function clearError(){document.getElementById('error-box').style.display='none'}
+
+// Health check
+(async()=>{
+  try{
+    const r=await fetch(`${API}/api/health`);
+    const d=await r.json();
+    if(d.status!=='ok')showError('Model not loaded. Run: python app.py');
+  }catch{
+    showError('Server not running. Start it with: python app.py');
+  }
+})();
+</script>
+</body>
+</html>
