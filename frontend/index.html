@@ -496,9 +496,9 @@ h1 em{color:var(--leaf-l);font-style:italic}
   <div class="upload-icon-wrap">🌱</div>
   <div class="drop-title">Drop a leaf image here</div>
   <p class="drop-sub">JPG · PNG · WebP · up to 10 MB · any camera · any angle</p>
-  <label for="fileInput" class="pick-btn" style="cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+  <button type="button" class="pick-btn" id="pick-btn" style="display:inline-flex;align-items:center;gap:8px;">
   📷 Choose image
-</label>
+</button>
 <input type="file" id="fileInput" accept="image/*" style="display:none"/>
 </div>
 
@@ -558,6 +558,18 @@ document.getElementById('fileInput').onchange=e=>{
 
 // Drag & drop
 const dz=document.getElementById('drop-zone');
+// Click-to-upload support (fix Choose image)
+document.getElementById('pick-btn').onclick = (e) => {
+  e.stopPropagation();
+  document.getElementById('fileInput').click();
+};
+
+// Also allow clicking anywhere in the drop zone to open picker
+dz.onclick = (e) => {
+  // If user clicked the button, the button handler will run
+  if (e.target && e.target.id === 'pick-btn') return;
+  document.getElementById('fileInput').click();
+};
 dz.ondragover=e=>{e.preventDefault();dz.classList.add('drag-over')};
 dz.ondragleave=()=>dz.classList.remove('drag-over');
 dz.ondrop=e=>{
@@ -638,33 +650,64 @@ function renderResult(r,ms){
   }
 
   const conf = r.confidence;
-  // FIX: colour-code confidence bar
+
+  // colour-code confidence bar
   const confClass = conf >= 0.80 ? 'conf-high' : conf >= 0.65 ? 'conf-mid' : 'conf-low';
+
+  // severity pill class + icon (keep your existing mapping)
   const sevCls={None:'sev-none',Moderate:'sev-mod',High:'sev-high',Severe:'sev-sev'}[r.severity]||'sev-na';
   const icon={None:'✅',Moderate:'⚠️',High:'🔴',Severe:'🚨'}[r.severity]||'🔍';
 
-  // FIX: render warning banner prominently if present
+  // warning banner prominently if present
   const warnHtml = r.warning
     ? `<div class="warn-banner"><span class="warn-icon">⚠️</span><span>${escHtml(r.warning)}</span></div>`
     : '';
 
+  // Inference time moved UP and shown as full-width row
+  const hasMs = (ms !== undefined && ms !== null);
+  const inferenceRow = hasMs
+    ? `<div class="info-cell span2">
+         <div class="info-lbl">Inference time</div>
+         <div class="info-val">${Math.round(ms)} ms (TTA ×6)</div>
+       </div>`
+    : '';
+
+  // Replace "Unknown" with "Not sure" for low confidence / warning
+  const notSure = (!!r.warning) || (conf < 0.50);
+  const pillText = notSure ? 'Not sure' : escHtml(r.severity || '');
+
   rm.innerHTML=`
     ${warnHtml}
+
+    <div class="info-grid">
+      ${inferenceRow}
+    </div>
+
     <div class="result-hero">
       <div class="result-titles">
         <div class="plant-label">🌱 ${escHtml(r.plant)}</div>
         <div class="disease-title">${icon} ${escHtml(r.disease)}</div>
         <div class="conf-row">
-          <div class="conf-track"><div class="conf-fill ${confClass}" id="conf-fill" style="width:0%" data-w="${Math.round(conf*100)}"></div></div>
+          <div class="conf-track">
+            <div class="conf-fill ${confClass}" id="conf-fill" style="width:0%" data-w="${Math.round(conf*100)}"></div>
+          </div>
           <span class="conf-pct">${r.confidence_pct}</span>
         </div>
       </div>
-      <div class="sev-pill ${sevCls}">${r.severity==='N/A'?'Unknown':escHtml(r.severity)}</div>
+      ${(r.severity && r.severity !== 'None' && pillText)
+  ? `<div class="sev-pill ${sevCls}">${pillText}</div>`
+  : ``}
     </div>
+
     <div class="info-grid">
-      <div class="info-cell"><div class="info-lbl">Description</div><div class="info-val">${escHtml(r.description)}</div></div>
-      <div class="info-cell"><div class="info-lbl">Treatment</div><div class="info-val">${escHtml(r.treatment)}</div></div>
-      ${ms?`<div class="info-cell"><div class="info-lbl">Inference time</div><div class="info-val">${Math.round(ms)} ms (TTA ×6)</div></div>`:''}
+      <div class="info-cell">
+        <div class="info-lbl">Description</div>
+        <div class="info-val">${escHtml(r.description)}</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-lbl">Treatment</div>
+        <div class="info-val">${escHtml(r.treatment)}</div>
+      </div>
     </div>`;
 
   setTimeout(()=>{

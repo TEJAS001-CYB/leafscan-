@@ -1,0 +1,197 @@
+{
+  "Apple___Apple_scab": {
+    "severity": "Moderate",
+    "description": "A fungal disease (Venturia inaequalis) that appears as olive-green to dark, velvety spots on leaves. Infected leaves may yellow, curl, and drop early, reducing tree vigor and fruit quality.",
+    "treatment": "Remove and destroy fallen leaves and infected debris; prune to improve airflow and reduce leaf wetness; avoid overhead irrigation; apply a locally recommended fungicide program starting at early season if the disease is recurring (follow label and local extension guidance)."
+  },
+  "Apple___Black_rot": {
+    "severity": "High",
+    "description": "A fungal disease (Botryosphaeria spp.) that can cause brown to black lesions on leaves and may also infect fruit and twigs. It often survives in mummified fruit, dead wood, and cankers.",
+    "treatment": "Prune out dead/diseased wood and remove mummified fruit; sanitize tools between cuts; improve canopy airflow; keep trees vigorous with proper watering and nutrition; use appropriate fungicides when conditions favor disease and where recommended locally."
+  },
+  "Apple___Cedar_apple_rust": {
+    "severity": "Moderate",
+    "description": "A rust disease (Gymnosporangium juniperi-virginianae) causing yellow-orange spots on apple leaves, sometimes with raised lesions. It requires both apple and nearby juniper/cedar hosts to complete its life cycle.",
+    "treatment": "If feasible, reduce nearby juniper/cedar sources or remove rust galls; plant resistant varieties when possible; prune for airflow; apply preventive fungicides during susceptible periods if rust is common in your area (per local recommendations)."
+  },
+  "Apple___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no obvious signs of disease such as spots, mildew, blight, or mosaic patterns.",
+    "treatment": "No treatment needed. Maintain good spacing, balanced fertilization, and regular monitoring; water at the base to keep foliage dry."
+  },
+  "Blueberry___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with normal color and no visible lesions or discoloration patterns.",
+    "treatment": "No treatment needed. Maintain proper soil acidity for blueberries, consistent watering, and remove weeds to reduce stress."
+  },
+  "Cherry_(including_sour)___Powdery_mildew": {
+    "severity": "Moderate",
+    "description": "A fungal disease that produces white, powdery growth on leaf surfaces. It can cause leaf curling, reduced photosynthesis, and weakened growth, especially in warm days and cool nights.",
+    "treatment": "Prune for airflow and light penetration; remove heavily infected leaves where practical; avoid excess nitrogen that promotes tender growth; apply sulfur or other labeled fungicides early when symptoms begin (follow local guidance and label directions)."
+  },
+  "Cherry_(including_sour)___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no powdery coating, lesions, or abnormal discoloration.",
+    "treatment": "No treatment needed. Keep good airflow through pruning and avoid wetting foliage unnecessarily."
+  },
+  "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": {
+    "severity": "High",
+    "description": "A fungal leaf disease (gray leaf spot) causing rectangular, gray-tan lesions that follow the leaf veins. Severe infection reduces leaf area, lowering yield, especially in warm, humid conditions.",
+    "treatment": "Rotate crops and manage corn residue (pathogen overwinters in debris); choose resistant hybrids when available; avoid dense canopies where possible; consider fungicide application at recommended growth stages if disease pressure is high (per agronomic/local extension advice)."
+  },
+  "Corn_(maize)___Common_rust_": {
+    "severity": "Moderate",
+    "description": "A fungal disease producing small, raised, rust-colored pustules on leaves. It can reduce photosynthesis, especially when severe, and is favored by moderate temperatures and moisture.",
+    "treatment": "Plant resistant varieties when available; monitor fields; rotate crops and manage volunteer corn; fungicides may be used if rust is severe and crop stage/yield potential justify it (follow local agronomy recommendations)."
+  },
+  "Corn_(maize)___Northern_Leaf_Blight": {
+    "severity": "High",
+    "description": "A fungal disease (Exserohilum turcicum) causing long, cigar-shaped gray-green to tan lesions on leaves. Heavy infection can lead to significant yield losses in humid conditions.",
+    "treatment": "Use resistant hybrids; rotate away from corn and manage infected residue; improve airflow by appropriate planting density; apply fungicides when warranted based on scouting, weather risk, and local recommendations."
+  },
+  "Corn_(maize)___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no rust pustules, blight lesions, or gray leaf spot symptoms.",
+    "treatment": "No treatment needed. Maintain balanced fertility and irrigation; continue scouting for early disease detection."
+  },
+  "Grape___Black_rot": {
+    "severity": "High",
+    "description": "A fungal disease (Guignardia bidwellii) causing brown leaf spots with dark margins and tiny black fruiting bodies. It can also severely affect fruit, leading to shriveled ‘mummies’.",
+    "treatment": "Remove and destroy mummified berries and infected debris; prune to open the canopy and improve airflow; avoid overhead irrigation; use preventive fungicides during the susceptible period if black rot is common (follow local viticulture guidance)."
+  },
+  "Grape___Esca_(Black_Measles)": {
+    "severity": "Severe",
+    "description": "A complex trunk disease associated with multiple fungi, causing leaf ‘tiger stripe’ patterns and reduced vine vigor. It can lead to chronic decline and sudden vine collapse in some cases.",
+    "treatment": "Prune out diseased wood where possible and protect pruning wounds; sanitize tools; improve vine health (avoid stress); remove severely affected vines if decline is advanced; consult local viticulture resources—chemical control is limited and management is mainly cultural/sanitation."
+  },
+  "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)": {
+    "severity": "Moderate",
+    "description": "A fungal leaf spot disease causing angular to irregular brown lesions that may coalesce, reducing leaf function and overall vine vigor under humid conditions.",
+    "treatment": "Remove infected leaves when practical; improve canopy airflow through pruning and training; avoid prolonged leaf wetness; apply labeled fungicides if disease pressure is high and conditions remain favorable (per local guidance)."
+  },
+  "Grape___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no blotches, leaf spots, or striping patterns.",
+    "treatment": "No treatment needed. Maintain good canopy management and regular monitoring."
+  },
+  "Orange___Haunglongbing_(Citrus_greening)": {
+    "severity": "Severe",
+    "description": "A serious bacterial disease (HLB) spread by psyllids, causing blotchy mottling, yellow shoots, and overall decline. Fruit may be misshapen and bitter. It is difficult to cure once infected.",
+    "treatment": "Control psyllid vectors (integrated pest management); remove and replace severely infected trees when advised; maintain tree nutrition to reduce stress; consult local citrus authorities/extension services for region-specific management—early detection and vector control are critical."
+  },
+  "Peach___Bacterial_spot": {
+    "severity": "High",
+    "description": "A bacterial disease causing small dark spots that can enlarge and lead to shot-holes or leaf drop. It can also affect fruit and twigs, especially in warm, wet weather.",
+    "treatment": "Use resistant varieties if available; avoid overhead watering; prune for airflow; apply copper-based bactericides or other labeled materials at recommended times (often dormant/early season) according to local extension recommendations."
+  },
+  "Peach___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no bacterial spotting, shot-holes, or abnormal discoloration.",
+    "treatment": "No treatment needed. Keep trees healthy with proper pruning, irrigation, and sanitation."
+  },
+  "Pepper,_bell___Bacterial_spot": {
+    "severity": "High",
+    "description": "A bacterial disease causing water-soaked leaf spots that turn brown/black, sometimes with yellow halos. It can spread quickly in warm, wet conditions and by contaminated tools or splashing water.",
+    "treatment": "Use disease-free seed/transplants; avoid working plants when wet; rotate crops and remove infected debris; avoid overhead irrigation; copper-based sprays (often with other products depending on local guidance) may reduce spread—follow label and local recommendations."
+  },
+  "Pepper,_bell___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no dark bacterial lesions or yellow halos.",
+    "treatment": "No treatment needed. Maintain good spacing and water at the base to keep foliage dry."
+  },
+  "Potato___Early_blight": {
+    "severity": "High",
+    "description": "A fungal disease (Alternaria solani) causing brown spots with concentric rings (‘target’ pattern) on older leaves. It can defoliate plants and reduce yield, especially under stress.",
+    "treatment": "Remove infected leaves where feasible; rotate crops (avoid planting potatoes/tomatoes in same area consecutively); maintain consistent watering and nutrition; use labeled fungicides preventively or at first symptoms in high-risk conditions (follow local extension guidance)."
+  },
+  "Potato___Late_blight": {
+    "severity": "Severe",
+    "description": "A destructive disease (Phytophthora infestans) causing rapidly spreading water-soaked lesions that turn brown/black; may show white fuzzy growth under humid conditions. Can destroy foliage quickly and infect tubers.",
+    "treatment": "Act quickly: remove and destroy severely infected foliage; avoid overhead irrigation; ensure good airflow; use resistant varieties when possible; apply appropriate blight fungicides on a strict schedule during outbreaks (consult local extension—late blight management is time-sensitive)."
+  },
+  "Potato___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no target spots or rapidly spreading blight lesions.",
+    "treatment": "No treatment needed. Continue scouting, especially during cool, wet weather."
+  },
+  "Raspberry___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no visible fungal spots, rust, or mildew symptoms.",
+    "treatment": "No treatment needed. Maintain good pruning and spacing to reduce humidity in the canopy."
+  },
+  "Soybean___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no obvious lesions, mosaic, or blight symptoms.",
+    "treatment": "No treatment needed. Maintain good fertility and scout regularly for pests and disease."
+  },
+  "Squash___Powdery_mildew": {
+    "severity": "Moderate",
+    "description": "A fungal disease causing white powdery patches on leaves that can expand and lead to yellowing, browning, and reduced yield. Common in warm weather with humid nights.",
+    "treatment": "Remove heavily infected leaves; improve airflow and avoid crowding; water at the base; apply sulfur or other labeled fungicides early (or horticultural oils/bicarbonates depending on local guidance) and rotate modes of action to reduce resistance."
+  },
+  "Strawberry___Leaf_scorch": {
+    "severity": "Moderate",
+    "description": "A fungal disease causing small purple to dark spots that can merge, giving leaves a scorched appearance. Severe cases reduce plant vigor and fruit production.",
+    "treatment": "Remove old infected leaves and improve airflow; avoid overhead irrigation; keep plants well-spaced; apply labeled fungicides if disease is persistent and weather favors spread (consult local recommendations)."
+  },
+  "Strawberry___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with no dark scorch lesions or extensive spotting.",
+    "treatment": "No treatment needed. Maintain good sanitation by removing old leaves and keeping beds clean."
+  },
+  "Tomato___Bacterial_spot": {
+    "severity": "High",
+    "description": "A bacterial disease producing small dark leaf spots, sometimes with yellow halos. Spots may merge, causing leaf yellowing and defoliation, often worsening with warm, wet weather.",
+    "treatment": "Use disease-free seed/transplants; avoid overhead irrigation and handling plants when wet; remove infected debris; rotate crops; copper-based bactericides can help reduce spread (often preventative)—follow label and local extension guidance."
+  },
+  "Tomato___Early_blight": {
+    "severity": "High",
+    "description": "A fungal disease causing brown lesions with concentric rings, typically starting on older leaves. It can lead to defoliation and reduced yield, especially when plants are stressed.",
+    "treatment": "Remove infected lower leaves; mulch to reduce soil splash; rotate crops; water consistently at the base; apply labeled fungicides preventively or at first symptoms when conditions favor disease (follow local guidance)."
+  },
+  "Tomato___Late_blight": {
+    "severity": "Severe",
+    "description": "A fast-moving disease (Phytophthora infestans) causing irregular, water-soaked lesions that quickly turn brown/black. Under humid conditions, white fuzzy growth may appear on lesion edges. Can ruin plants rapidly.",
+    "treatment": "Remove and destroy infected material promptly; avoid overhead watering; increase airflow; apply appropriate fungicides immediately in outbreak conditions (consult local extension); do not compost infected plants; monitor nearby potatoes/tomatoes."
+  },
+  "Tomato___Leaf_Mold": {
+    "severity": "Moderate",
+    "description": "A fungal disease favored by high humidity, causing pale green/yellow spots on upper leaf surfaces and olive-brown moldy growth on the undersides.",
+    "treatment": "Reduce humidity (ventilate, increase spacing, prune); water at the base; remove infected leaves; apply labeled fungicides if needed, especially in greenhouse/high humidity environments."
+  },
+  "Tomato___Septoria_leaf_spot": {
+    "severity": "High",
+    "description": "A fungal leaf spot disease causing many small circular spots with dark margins and lighter centers. It often starts on lower leaves and can cause heavy defoliation.",
+    "treatment": "Remove infected lower leaves; avoid overhead irrigation; mulch to prevent soil splash; rotate crops; sanitize stakes/cages; apply labeled fungicides during favorable conditions (per local extension guidance)."
+  },
+  "Tomato___Spider_mites Two-spotted_spider_mite": {
+    "severity": "Moderate",
+    "description": "A pest infestation (not a disease) where mites cause fine stippling (tiny yellow/white specks), leaf bronzing, and sometimes webbing. Damage increases in hot, dry conditions.",
+    "treatment": "Spray leaf undersides with water to reduce mites; remove heavily infested leaves; increase humidity where appropriate; use insecticidal soap or horticultural oil thoroughly; consider labeled miticides if severe—rotate products to prevent resistance and protect beneficial insects."
+  },
+  "Tomato___Target_Spot": {
+    "severity": "Moderate",
+    "description": "A fungal disease causing brown lesions that may develop concentric rings. It can affect leaves and sometimes fruit, and is favored by warm, humid conditions.",
+    "treatment": "Improve airflow (prune/stake), avoid overhead irrigation, remove infected debris, rotate crops; apply labeled fungicides if disease pressure is high and weather remains favorable."
+  },
+  "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+    "severity": "Severe",
+    "description": "A viral disease transmitted mainly by whiteflies. Leaves may curl upward, yellow between veins, and plants become stunted with reduced fruit set.",
+    "treatment": "Control whiteflies (yellow sticky traps, reflective mulch, insect netting, and labeled insecticides when appropriate); remove heavily infected plants to reduce spread; use resistant varieties; keep weeds down (they can host whiteflies/virus)."
+  },
+  "Tomato___Tomato_mosaic_virus": {
+    "severity": "High",
+    "description": "A viral disease causing mottled light/dark green patterns, leaf distortion, and reduced growth. It can spread mechanically through hands, tools, and contaminated plant material.",
+    "treatment": "There is no cure: remove infected plants; disinfect tools and wash hands; avoid tobacco handling around plants; use resistant varieties and certified clean seed/transplants; control weeds that can host the virus."
+  },
+  "Tomato___healthy": {
+    "severity": "None",
+    "description": "Leaf appears healthy with normal color and no obvious lesions, mold, or mosaic patterns.",
+    "treatment": "No treatment needed. Continue monitoring and maintain good watering, nutrition, and airflow."
+  },
+  "not_a_leaf": {
+    "severity": "Unknown",
+    "description": "The image was not recognized as a plant leaf (it may be a non-leaf object, unclear photo, or multiple objects).",
+    "treatment": "Upload a clear, well-lit photo of a single leaf in focus (avoid heavy shadows and very busy backgrounds)."
+  }
+}
