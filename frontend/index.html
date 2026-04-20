@@ -453,6 +453,114 @@ h1 em{color:var(--leaf-l);font-style:italic}
 }
 .reset-btn:hover{background:rgba(45,106,79,0.1);border-color:var(--leaf-l)}
 
+/* ── History (NEW) ── */
+.history-actions{
+  display:flex;
+  gap:10px;
+  margin-top:1rem;
+}
+.history-btn{
+  flex:1;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:rgba(45,106,79,0.15);
+  border:0.5px solid var(--border);
+  color:var(--leaf-xl);
+  padding:0.9rem;border-radius:var(--r);
+  font-family:'Inter',sans-serif;
+  font-size:0.9rem;font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+  animation:fadeUp 0.5s 0.25s ease both;
+}
+.history-btn:hover{background:rgba(45,106,79,0.3);border-color:var(--leaf-l)}
+.history-btn:disabled{opacity:0.55;cursor:not-allowed}
+
+#history-section{
+  margin-top:2.2rem;
+  padding-top:1.2rem;
+}
+.history-card{
+  background:rgba(13,31,18,0.85);
+  border:0.5px solid var(--border);
+  border-radius:var(--r-lg);
+  backdrop-filter:blur(16px);
+  overflow:hidden;
+  margin-top:1rem;
+}
+.history-head{
+  padding:1.2rem 1.4rem;
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.history-title{
+  font-family:'Instrument Serif',serif;
+  font-size:1.4rem;
+  color:var(--leaf-xl);
+}
+.history-sub{
+  font-size:0.8rem;
+  color:var(--muted);
+  margin-top:4px;
+}
+.history-clear{
+  background:transparent;
+  border:0.5px solid var(--border);
+  color:var(--muted);
+  padding:0.55rem 0.9rem;
+  border-radius:100px;
+  cursor:pointer;
+  transition:all 0.2s;
+  font-size:0.82rem;
+}
+.history-clear:hover{border-color:var(--leaf-l);color:var(--leaf-xl);background:rgba(45,106,79,0.1)}
+
+.history-list{padding:1rem 1.4rem 1.4rem}
+.hitem{
+  display:flex;
+  gap:12px;
+  padding:0.9rem 0;
+  border-bottom:0.5px solid var(--border);
+}
+.hitem:last-child{border-bottom:none;padding-bottom:0}
+.hthumb{
+  width:64px;height:64px;
+  border-radius:12px;
+  border:0.5px solid var(--border);
+  object-fit:cover;
+  flex-shrink:0;
+  box-shadow:0 10px 25px rgba(0,0,0,0.35);
+}
+.hmeta{flex:1;min-width:0}
+.htitle{
+  font-size:0.92rem;
+  color:var(--text);
+  font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.hpill{
+  font-size:0.72rem;
+  letter-spacing:0.02em;
+  color:var(--muted);
+  border:0.5px solid var(--border);
+  padding:4px 10px;
+  border-radius:100px;
+  background:rgba(45,106,79,0.08);
+}
+.hactions{display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.hbtn{
+  background:rgba(45,106,79,0.15);
+  border:0.5px solid var(--border);
+  color:var(--leaf-xl);
+  padding:0.55rem 0.9rem;
+  border-radius:12px;
+  cursor:pointer;
+  transition:all 0.2s;
+  font-size:0.82rem;
+  white-space:nowrap;
+}
+.hbtn:hover{background:rgba(45,106,79,0.3);border-color:var(--leaf-l)}
+
 /* ── Responsive ── */
 @media(max-width:540px){
   .info-grid{grid-template-columns:1fr}
@@ -461,6 +569,8 @@ h1 em{color:var(--leaf-l);font-style:italic}
   .result-hero{flex-direction:column;gap:0.8rem}
   .url-row{flex-direction:column}
   .stats-row{gap:0.8rem}
+  .history-actions{flex-direction:column}
+  .hactions{flex-direction:row}
 }
 </style>
 </head>
@@ -530,8 +640,31 @@ h1 em{color:var(--leaf-l);font-style:italic}
 <div id="result-section">
   <div class="result-main" id="result-main"></div>
   <div class="top5-card" id="top5-card"></div>
+
+  <!-- NEW: history buttons -->
+  <div class="history-actions">
+    <button class="history-btn" id="view-history-btn" type="button" onclick="scrollToHistory()">🕘 View past results</button>
+    <button class="history-btn" id="save-hint-btn" type="button" disabled title="History saves automatically after each analysis.">✅ Saved to history</button>
+  </div>
+
   <button class="reset-btn" onclick="resetAll()">🌿 Analyze another leaf</button>
 </div>
+
+<!-- NEW: History section -->
+<section id="history-section">
+  <div class="history-card">
+    <div class="history-head">
+      <div>
+        <div class="history-title">Past results</div>
+        <div class="history-sub">Stored in this browser (localStorage). Click “Review” to re-open an older result.</div>
+      </div>
+      <button class="history-clear" type="button" onclick="clearHistory()">Clear</button>
+    </div>
+    <div class="history-list" id="history-list">
+      <!-- injected -->
+    </div>
+  </div>
+</section>
 
 </div><!-- /wrap -->
 
@@ -539,7 +672,116 @@ h1 em{color:var(--leaf-l);font-style:italic}
 const API = window.location.origin;
 let blob = null, imgUrl = null;
 
-// Particles
+/* ── History storage (NEW) ── */
+const HISTORY_KEY = 'leafscan_history_v1';
+const HISTORY_MAX = 25;
+
+function loadHistory(){
+  try{
+    const raw = localStorage.getItem(HISTORY_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch{
+    return [];
+  }
+}
+function saveHistory(arr){
+  try{
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr));
+  }catch(e){
+    // ignore quota errors
+  }
+}
+function addToHistory(entry){
+  const hist = loadHistory();
+  hist.unshift(entry);
+  const trimmed = hist.slice(0, HISTORY_MAX);
+  saveHistory(trimmed);
+  renderHistory();
+}
+function clearHistory(){
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+}
+function scrollToHistory(){
+  const el = document.getElementById('history-section');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function renderHistory(){
+  const list = document.getElementById('history-list');
+  const hist = loadHistory();
+
+  // disable view button if empty
+  const viewBtn = document.getElementById('view-history-btn');
+  if(viewBtn) viewBtn.disabled = hist.length === 0;
+
+  if(!hist.length){
+    list.innerHTML = `<div class="info-val" style="padding:0.6rem 0;color:var(--muted);">
+      No past results yet. Run an analysis and it will appear here.
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = hist.map((h, idx) => {
+    const title = h.is_leaf
+      ? `${h.plant} — ${h.disease}`
+      : `Not a leaf`;
+
+    const when = new Date(h.ts).toLocaleString();
+
+    const conf = (h.confidence !== undefined && h.confidence !== null)
+      ? `${Math.round(h.confidence*100)}%`
+      : '';
+
+    const sev = h.severity || '';
+
+    const ms = (h.inference_ms !== undefined && h.inference_ms !== null)
+      ? `${Math.round(h.inference_ms)} ms`
+      : '';
+
+    return `<div class="hitem">
+      <img class="hthumb" src="${h.thumbnail || ''}" alt="thumbnail"/>
+      <div class="hmeta">
+        <div class="htitle" title="${escHtml(title)}">${escHtml(title)}</div>
+        <div class="hrow">
+          <span class="hpill">🗓 ${escHtml(when)}</span>
+          ${conf ? `<span class="hpill">🎯 ${escHtml(conf)}</span>` : ``}
+          ${sev ? `<span class="hpill">⚑ ${escHtml(sev)}</span>` : ``}
+          ${ms ? `<span class="hpill">⏱ ${escHtml(ms)}</span>` : ``}
+        </div>
+      </div>
+      <div class="hactions">
+        <button class="hbtn" type="button" onclick="reviewHistory(${idx})">Review</button>
+        <button class="hbtn" type="button" onclick="deleteHistory(${idx})">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function deleteHistory(idx){
+  const hist = loadHistory();
+  hist.splice(idx, 1);
+  saveHistory(hist);
+  renderHistory();
+}
+function reviewHistory(idx){
+  const hist = loadHistory();
+  const h = hist[idx];
+  if(!h) return;
+
+  // Show result section and render the saved result
+  clearError();
+  document.getElementById('result-section').style.display='block';
+  document.getElementById('loading').style.display='none';
+
+  // ensure upload area isn't hiding important actions
+  // (do not alter existing flow too much)
+  renderResult(h, h.inference_ms);
+  // scroll back up to results
+  const res = document.getElementById('result-section');
+  if(res) res.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ── Particles ── */
 (function(){
   const c = document.getElementById('particles');
   for(let i=0;i<18;i++){
@@ -551,12 +793,12 @@ let blob = null, imgUrl = null;
   }
 })();
 
-// File input
+/* ── File input ── */
 document.getElementById('fileInput').onchange=e=>{
   const f=e.target.files[0]; if(f)handleFile(f);
 };
 
-// Drag & drop
+/* ── Drag & drop ── */
 const dz=document.getElementById('drop-zone');
 // Click-to-upload support (fix Choose image)
 document.getElementById('pick-btn').onclick = (e) => {
@@ -579,7 +821,7 @@ dz.ondrop=e=>{
   else showError('Please drop an image file.');
 };
 
-// URL
+/* ── URL ── */
 document.getElementById('url-btn').onclick=()=>{
   const u=document.getElementById('url-input').value.trim();
   if(!u){showError('Enter a URL first.');return}
@@ -624,7 +866,18 @@ async function analyze(){
     }
     const d=await res.json();
     if(!res.ok||!d.success){showError(d.error||'Prediction failed.');return}
+
+    // render result
     renderResult(d.result,d.inference_ms);
+
+    // NEW: save into history for review later
+    const entry = {
+      ts: Date.now(),
+      inference_ms: d.inference_ms,
+      ...d.result
+    };
+    addToHistory(entry);
+
   }catch(e){
     showError(`Cannot reach server. Make sure app.py is running: python app.py`);
   }finally{
@@ -780,6 +1033,9 @@ function clearError(){document.getElementById('error-box').style.display='none'}
     showError('Server not running. Start it with: python app.py');
   }
 })();
+
+// NEW: render history on load
+renderHistory();
 </script>
 </body>
 </html>
